@@ -3,114 +3,120 @@
  x,y,w
  reveal = true or false
 */
-
-var canvas = document.querySelector('canvas');
-var pen;
-var grid;
-var cols = 10;
-var rows = 10;
-var w = 40;
-
-class cell {
-    constructor( x,y,w , evento ){
-        if ( Math.random(1) < 0.5) {
-            this.mine = true;
-        } else
-        {
-            this.mine = false;
-        }
+(function(Window){
+    var App = {
+        objectCell: function box(element, event, funcion) {
+                this.element = document.createElement(element),
+                this.visible = false,
+                
+                this.atributes = this.element.setAttribute('class', 'cell'),
+                
+                //this.content = this.element.textContent = content
+              
+                this.event = this.element.addEventListener( event , funcion );
+               
+              },
         
-        this.reavealed = true;
-        this.x = x;
-        this.y = y;
-        this.w = w;
-    }
+        
+        cols :10,
+        rows: 10,
+        arr: new Array(10),
+        
 
-    show() {
-       pen = canvas.getContext('2d');
-       canvas.addEventListener('click', this.test, false);
-       pen.rect(this.x,this.y,this.w, this.w);
-       pen.lineWidth= 0.5;
-      if ( this.reavealed) {
-          if ( this.mine) {
-            //ctx.arc(x, y, radius, startAngle, endAngle [, anticlockwise]);
-            pen.rect(this.x + this.w * 0.5  ,this.y + this.w * 0.5,  2 , 2);
+        htmlElements: {
+            container: document.querySelector('.container'),
+            btngame: document.querySelector('.again')
+        },
+
+        init: function(){
+            console.log('iniciando');
+            App.initHandlers();
+            
+
+        },
+        
+        initHandlers: function(){
+            App.initArrays();
+            App.initSetup();
+            
+            
+        },
+
+        initArrays: function() {
+          for ( var i = 0; i < App.cols ; i++) {
+            App.arr[i] = new Array(10)
           }
-          else {
-            pen.rect(this.x,this.y,this.w, this.w);  
-          }
-      }
-      pen.stroke();
-    }
-    
-    containe(x,y) {
-        
-        
-            if ( x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.w )
-            {
-             return true;
-            }
-        
+       
+            
+        },
+        initSetup: function(){
+            for ( var i = 0; i < App.cols ; i++) {
+                for ( var j = 0; j < App.rows; j++) {
+                    App.arr[i][j] = new App.objectCell('div', 'click', App.handleClickBtn);
+                    App.htmlElements.container.appendChild( App.arr[i][j].element)
+                }
+              }
+
+            App.htmlElements.btngame.addEventListener('click', App.handleRandom)
+
+              
+
+        },
+       
+        handleClickBtn: function(element){
+            
         
             
-        }
-    
-    reavealed() {
-       this.reavealed = false; 
-    }
-}
+            
+        },
+        handleRandom: function(e){
 
+           App.clear()
 
-
-function make2dArray( cols, rows) {
-    var arr = new Array(cols);
-     for( let i = 0; i < arr.length; i++){
-         arr[i] = new Array(rows);
-     }
-     return arr;
-    }
-
-function setup() {
-    //create canvas
-   
-    grid = make2dArray( cols, rows);
-    for ( let i = 0; i < cols; i++) {
-        for ( let j = 0; j < rows; j++) {
-        grid[i][j] = new cell( i * w, j * w, w)
-        }
-    }
-    
-}
-function mousePresed() {
-    canvas.addEventListener('click', (e) =>{
-    let x = e.pageX;
-    let y = e.pageY;
-        for ( let i = 0; i < cols; i++) {
-            for ( let j = 0; j < rows;j++) {
-                if( grid[i][j].containe(x,y) ) {
-                    console.log(grid[i][j].x)
-                    
-
+            for ( var i = 0; i < App.cols ; i++) {
+                for ( var j = 0; j < App.rows; j++) {
+                if ( Math.random(1) < 0.2) {
+                    App.arr[i][j].element.textContent = '*';
                 }
+                   
+                }
+              }
+                             
+        },
+        clear: function(){
+            for ( var i = 0; i < App.cols ; i++) {
+                for ( var j = 0; j < App.rows; j++) {
+                    App.arr[i][j].element.textContent = '';
+                   
+                }
+              }
+        },
+
+        handleDeleteBtn: function(e) {
+            let n = e.currentTarget.textContent;
+            
+            if ( App.boxs[n].element.classList.contains('selected' ) ){
+                App.boxs[n].element.classList.remove('selected')
+                App.boxs[n].element.classList.remove('blocker')
+                App.htmlElements.container2.removeChild(e.currentTarget);
             }
-        
-           } 
-    
+           
+               
+        },
+        initBtnBuy: function(e){
+           
+          
+        },
 
-    } )
-    
-}
 
-function draw(){
-    setup();
-    
-    for ( let i = 0; i < cols; i++) {
-        for ( let j = 0; j < rows;j++) {
-         grid[i][j].show()
+        initWinner:function(e) {
+           
+                
+              
+            
+           
         }
-    
-       }
-
-}
-mousePresed();
-draw();
+        
+    };
+    Window.App = App;
+})(window);
