@@ -8,6 +8,7 @@
         objectCell: function box(element, event, funcion, i, j) {
                 this.element = document.createElement(element),
                 this.mine = false,
+                this.neigbordCount = 0;
                 
                 this.atributes = this.element.setAttribute('class', 'cell'),
                 this.row = this.element.setAttribute('data-row' ,  i ),
@@ -85,18 +86,7 @@
          
             
         },
-        getPositionCol: function(){
-            App.objectCell.prototype.getCol = function() {
-                
-                return this.col;
-            }
-        },
-        getPositionRow: function() {
-            App.objectCell.prototype.getRow = function() {
-                
-                return this.row;
-            }
-        },
+
         handleRandom: function(){
 
            App.clear()
@@ -138,20 +128,29 @@
                     var n = App.arr[x][y]
                           
                         if ( n.mine == true ) {
-                        acum++;
+                          acum++;
+                          App.arr[x][y]
+                        }
+                       
                         }
                         
                     } 
                 }
-            }
+            
             if ( acum != 0) {
-              App.arr[fila][colum].element.textContent = acum;  
-            } 
-            else {
-                App.floodFill(fila , colum )
+                App.content(fila , colum, acum);
             }
+            else {
+                App.floodFill(fila, colum)
+            }
+             
+            
            
        
+        },
+        content: function(fila, colum, acum) {
+            App.arr[fila][colum].neigbordCount = acum;
+            App.arr[fila][colum].element.textContent = acum;
         },
         floodFill: function(fila, colum){
            
@@ -162,14 +161,14 @@
                  
                     if ( x != -1 && y != -1 && x != 10 &&  y != 10 ) {
                         
-                        var n = App.arr[x][y]
-                          
-                        if ( n.mine != true ) {
+                        var n = App.arr[x][y];
+                        
+                        if (  n.mine != true && App.arr[x][y].status != true) {
+                            App.addStatus(x,y);
+                            App.arr[x][y].element.classList.add('revealed');
                             App.neigbord(x,y);
                         }
-                        {
-                        return false ;
-                        }
+                        
                             
      
                         
@@ -184,8 +183,10 @@
         },
 
 
-        initWinner:function(e) {
-           
+        addStatus:function(x,y) {
+         
+                App.arr[x][y].status = true;
+            
                 
               
             
